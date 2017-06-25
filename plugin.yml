@@ -1,0 +1,5 @@
+name: Border
+main: TB\Border\Main
+author: TB
+version: 1.0
+api: 3.0.1
