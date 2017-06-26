@@ -29,12 +29,12 @@ class Main extends PluginBase implements Listener {
         
         $minX = $this->retrieveData("minX");
         $maxX = $this->retrieveData("maxX");
-        if($minX <= $x and $x <= $maxX and $minZ <= $z and $z <= $maxZ){
-            $ev->setCancelled(true);
+        if($x >= $minX and $x <= $maxX and $z <= $minZ and $z <= $maxZ){
+            $ev->setCancelled(false);
+        } else {
             $message = array($this->retrieveData("Message1"), $this->retrieveData("Message2"));
             $ev->getPlayer()->addTitle($message[0], $message[1], 90, 40, 90);
-        } else {
-            $ev->setCancelled(false);
+            $ev->setCancelled(true);
         }
     }
 }
