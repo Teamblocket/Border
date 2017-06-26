@@ -33,6 +33,7 @@ class Main extends PluginBase implements Listener {
             $ev->setCancelled(true);
             $message = array($this->retrieveData("Message1"), $this->retrieveData("Message2"));
             $ev->getPlayer()->addTitle($message[0], $message[1], 90, 40, 90);
+            $this->getServer()->getLogger()->warning($minX . " " . $maxX . " / " . $minZ . " " . $maxZ);
         }
     }
 }
