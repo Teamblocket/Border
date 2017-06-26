@@ -17,7 +17,7 @@ class Main extends PluginBase implements Listener {
         $this->saveDefaultConfig();
     }
     
-    public function retrieveConfig(String $config){
+    public function retrieveConfig($config){
         switch($config){
                 
             case "minZ":
