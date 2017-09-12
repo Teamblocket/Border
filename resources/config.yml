@@ -1,6 +1,4 @@
-maxX: 1000
-minX: -1000
-maxZ: 1000
-minZ: -1000
-Message1: "World Border"
-Message2: "You Reached The World Border"
+Border: 5000
+Message: 
+  "1": "Border Reached!"
+  "2": "You have reached the end of the world"
