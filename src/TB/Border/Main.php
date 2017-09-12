@@ -4,37 +4,59 @@ namespace TB\Border;
 
 use pocketmine\Server;
 use pocketmine\Player;
-use pocketmine\plugin\PluginBase;
-use pocketmine\event\Listener;
-use pocketmine\event\player\PlayerMoveEvent;
 use pocketmine\utils\Config;
+use pocketmine\math\Vector3;
+use pocketmine\plugin\PluginBase;
+use pocketmine\scheduler\PluginTask;
 
-class Main extends PluginBase implements Listener {
 
+class Main extends PluginBase{
+    
+    public $prefs;
+    
     public function onEnable(){
-        $this->getServer()->getLogger()->info("World Border Plugin Made by TB!");
-        $this->getServer()->getPluginManager()->registerEvents($this, $this);
-        $this->saveDefaultConfig();
+        $this->getServer()->getLogger()->info("World Border Plugin Made by Angel(@VortexZMcPe)!");
+        $this->getServer()->getScheduler()->scheduleRepeatingTask(new BorderCheck($this), 0);
+        if(!file_exists($this->getDataFolder() . "prefs.yml")){
+            $this->prefs = new Config($this->getDataFolder() . "prefs.yml", Config::YAML, [
+            "Border" => 5000,
+            "Message" => ["1" => "Border Reached!", "2" => "You have reached the end of the world"]
+             ]);
+            $this->prefs->save();
+        }
+    }
+
+    /**
+     * @param Player $player
+     *
+     * @return bool
+     */
+    public function inBorder(Player $player){
+        $v = new \pocketmine\math\Vector3($player->getLevel()->getSpawnLocation()->getX(),$player->getPosition()->getY(),$player->getLevel()->getSpawnLocation()->getZ());
+        if($player->getPosition()->distance($v) <= $this->prefs->get("Border")) {
+            return true;
+            // in border
+        }
+    }
+}
+
+class BorderCheck extends PluginTask{
+    
+    public function __construct(Main $plugin){
+        parent::__construct($plugin):
+        $this->plugin = $plugin;
     }
     
-    public function retrieveData($data){
-        return $this->getConfig()->get($data);
-    }
-
-    public function onMove(PlayerMoveEvent $ev){
-        $x = $ev->getPlayer()->x;
-        $z = $ev->getPlayer()->z;
-        $minZ = $this->retrieveData("minZ");
-        $maxZ = $this->retrieveData("maxZ");
-        
-        $minX = $this->retrieveData("minX");
-        $maxX = $this->retrieveData("maxX");
-        if(!$x >= $minX and !$x <= $maxX and !$z <= $minZ and !$z <= $maxZ){
-            $ev->setCancelled(true);
-            $message = array($this->retrieveData("Message1"), $this->retrieveData("Message2"));
-            $ev->getPlayer()->addTitle($message[0], $message[1], 90, 40, 90);
-        } else {
-            $ev->setCancelled(false);
+    public function onRun(int $currentTicks){
+        $messages = $this->plugin->prefs->get("Message");
+        $this->getOwner();
+        foreach($this->plugin->getServer()->getOnlinePlayers() as $players){
+            $player = $players;
+            if(!$this->plugin->inBorder($player)){
+                $coords = new Vector3($player->getX(), $player->getY(), $player()->getZ());
+                $player->teleport($coords):
+                $player->addTitle($messages["1"], $messages["2"], 50, 90, 40);
+            }
         }
     }
 }
